@@ -32,21 +32,34 @@ if _DATABASE == nil then
 end
 
 dwac = {}
-dwac.version = "0.4.0"
+dwac.version = "0.4.1"
 
 
 -- To enable/disable features set their state here
 dwac.enableMapSmoke = true
 dwac.enableMapIllumination = true
 dwac.enableMapUAV = true
-dwac.uavAltitude = 1200 -- limits opfor units visible to the uav
-dwac.uavSpeed = 111.000
+dwac.enableMapREPAIR = true
 
+-- UAV
+dwac.uavAltitude = 1200              -- limits opfor units visible to the uav
+dwac.uavSpeed = 111.000
+dwac.uavType = "MQ-9 Reaper"
+dwac.uavLimit = false                -- Limit UAV once (true) unlimited (false)
+
+-- Repair
+dwac.repairAltitude = 1200           -- limits opfor units visible to the repair
+dwac.repairSpeed = 50.000
+dwac.repairType = "CH-47D"
+dwac.repairLimit = false             -- Limit Repair once (true) unlimited (false)
+
+-- Illumination
 dwac.mapIlluminationAltitude = 700 -- Altitude(meters AGL) the illumination bomb appears determines duration (300sec max)/effectiveness
 dwac.illuminationPower = 1000000 -- 1 to 1000000(max) brightness
 dwac.illuminationUnits = 3 -- number of illum bombs deployed in a star pattern
 dwac.illuminationRadius = 500 -- units deployed in meters from target point
 
+-- FAC
 dwac.facEnableSmokeTarget = true    -- allows FAC-A smoking of targets
 dwac.facEnableLazeTarget = false    -- allows FAC-A to laze a target (controls appearance in F10 menu)
 dwac.facEnableInfraRedTarget = true -- allows FAC-A to put an NVG visible infrared beam on target (with laser).  Not recommended for PvP I suppose.
@@ -58,7 +71,7 @@ dwac.maxTargetTracking = 5
 dwac.scanForTargetFrequency = 15 -- longer period reduces the chance of failed target selection due to menu update collision
 dwac.displayCurrentTargetFrequency = 5
 
-dwac.MapRequest = {SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4}
+dwac.MapRequest = {SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4, REPAIR = 5}
 dwac.messageDuration = 20 -- seconds
 dwac.facAMenuTexts = {
   baseMenu = "FAC-A",
@@ -91,6 +104,7 @@ dwac.facSmokeColors = {
   "Blue"
 }
 
+-- Unit details
 dwac.uav = {
   ["frequency"] = 121,
   ["modulation"] = 0,
@@ -152,7 +166,7 @@ dwac.uav = {
       ["AddPropAircraft"] = 
       {
       }, -- end of ["AddPropAircraft"]
-      ["type"] = "MQ-9 Reaper",
+      ["type"] = dwac.uavType,
       ["unitId"] = 10,
       ["psi"] = 1.7703702498393,
       ["parking_id"] = "30",
@@ -563,6 +577,8 @@ function IsSpotterVisible( _client, _target )
 end
 dwac.IsSpotterVisible = IsSpotterVisible
 
+
+-- Read markers F10 map
 local function getMarkerRequest(requestText)
     local lowerText = string.lower(requestText)
     local isSmokeRequest = lowerText:match("^%s*-smoke;%a+%s*$")
@@ -594,6 +610,7 @@ local function setMapSmoke(requestText, vector)
 end
 dwac.setMapSmoke = setMapSmoke
 
+-- Function Illumination
 local function setMapIllumination(vector)
     if dwac.illuminationUnits == nil or dwac.illuminationUnits < 0 then
         _DATABASE:E( "dwac.illuminationUnits is nil or negative" )
@@ -620,8 +637,9 @@ local function setMapIllumination(vector)
 end
 dwac.setMapIllumination = setMapIllumination
 
+-- Function UAV active or not
 local function uavSearch(_unit, args)
-    if _unit:getTypeName() == "MQ-9 Reaper" and
+    if _unit:getTypeName() == dwac.uavType and
         _unit:getCoalition() == args[1] and
         _unit:inAir() then
         dwac.uavInFlight[args[1]] = true -- Probably a problem.  Coalition collision?
@@ -629,6 +647,7 @@ local function uavSearch(_unit, args)
 end
 dwac.uavSearch = uavSearch
 
+-- Function UAV Spawn
 local function setMapUAV(panel)
     local vector = panel.pos
     local _author = panel.author
@@ -676,16 +695,17 @@ local function setMapUAV(panel)
             dwac.uav["route"]["points"][1].y = vector.z
 
             coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uav)
-            trigger.action.outTextForCoalition(panel.coalition, "Launching an MQ-9 Reaper from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+            trigger.action.outTextForCoalition(panel.coalition, "Launching an UAV from " .. nearestAirfield:getName(), dwac.messageDuration, false)
             local lat, lon, alt = coord.LOtoLL(vector)
-            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested MQ-9 for Lat: " .. lat .. " Lon: " .. lon )
-            dwac.uavInFlight[panel.coalition] = true
+            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested UAV for Lat: " .. lat .. " Lon: " .. lon )
+            dwac.uavInFlight[panel.coalition] = dwac.uavLimit
         end
     end, nil, timer.getTime() + 5)
     return true
 end
 dwac.setMapUAV = setMapUAV
 
+-- Function Version
 local function showVersion()
     MESSAGE:New( "Version: " .. dwac.version, 5, "DWAC Load" ):ToAll()
 end
@@ -702,6 +722,7 @@ local function missionStopHandler(event)
 end
 dwac.missionStopHandler = missionStopHandler
 
+-- Function Smoke
 local function smokePoint(vector, smokeColor)
     vector.y = vector.y + 2.0
     local lat, lon, alt = coord.LOtoLL(vector)
