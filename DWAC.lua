@@ -2,16 +2,24 @@
     Selectable mission features
         - SMOKE: Map targeted (Idea stolen from Tupper of Rotorheads)
             Usage: On the F10 map, place a comment circle with text of "-smoke;<color>" (red|orange|green|white|blue) and minimize
+			
         - ILLUMINATION: Map targeted
             Usage: On the F10 map, place a comment circle with text of "-flare" and minimize
+			
         - FAC-A: (Currently limited to SA-342 Gazelles)
             - Smoke target
             - Laze target
             - Arty target
+			
         - UAV: Map targeted
-            Usage: On the F10 map, place a comment circle with text of "-uav" and minimize.  Limit one(1) MQ-9 Reaper in flight.
+            Usage: On the F10 map, place a comment circle with text of "-uav" and minimize.  Limit one(1) Optional MQ-9 Reaper in flight.
+			
+        - REPAIR: Map targeted
+            Usage: On the F10 map, place a comment circle with text of "-repair" and minimize.  Limit one(1) Optional CH-47D in flight.
+			
         - VERSION: Map activated
             Usage: On the F10 map, place a comment circle with text of "-version" to see the current version of DWAC
+			
     The MIT License (MIT)
     Copyright © 2022 gakksimian@gmail.com
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), 
@@ -32,34 +40,72 @@ if _DATABASE == nil then
 end
 
 dwac = {}
-dwac.version = "0.4.0"
-
+dwac.version = "0.4.7d"
 
 -- To enable/disable features set their state here
 dwac.enableMapSmoke = true
 dwac.enableMapIllumination = true
 dwac.enableMapUAV = true
-dwac.uavAltitude = 1200 -- limits opfor units visible to the uav
-dwac.uavSpeed = 111.000
+dwac.enableMapREPAIR = true
+dwac.enableMapDEBUG = true
+dwac.listHeloClientsInLog = false   	-- writes out all flyable helos to be compared with CTLD pilotname list
 
-dwac.mapIlluminationAltitude = 700 -- Altitude(meters AGL) the illumination bomb appears determines duration (300sec max)/effectiveness
-dwac.illuminationPower = 1000000 -- 1 to 1000000(max) brightness
-dwac.illuminationUnits = 3 -- number of illum bombs deployed in a star pattern
-dwac.illuminationRadius = 500 -- units deployed in meters from target point
+-- General / Common Settings
+dwac.messageDuration = 20 				-- seconds
+dwac.spawnAir = 0						-- UNDER CONSTRUCTION Spawn units in air (1) or on airfield (0)
+dwac.aiSkill = "Excellent"          	-- Random (Random), Excellent (Ace)
+dwac.alt_Type = "RADIO"					-- BARO (Sea Level) RADIO (Ground Level)
 
-dwac.facEnableSmokeTarget = true    -- allows FAC-A smoking of targets
-dwac.facEnableLazeTarget = false    -- allows FAC-A to laze a target (controls appearance in F10 menu)
-dwac.facEnableInfraRedTarget = true -- allows FAC-A to put an NVG visible infrared beam on target (with laser).  Not recommended for PvP I suppose.
+-- UAV
+dwac.uavmessageDuration = 180 			-- seconds
+dwac.uavAltitude = 914.4           	 	-- limits opfor units visible to the uav, on Sea level (meter)
+dwac.uavType = "MQ-9 Reaper"        	-- "MQ-9 Reaper" or "RQ-1A Predator"
+dwac.uavNum = "113"              		-- Support number
+dwac.uavLivery = "'camo' scheme"      	-- Livery
+dwac.uavInvisible = false				-- false, unit can be seen by Enemy AI CURRENTLY NOT WORKING 24-4-2023
+dwac.uavLimit = false               	-- Limit UAV once (true) unlimited (false)
+
+-- UNDER CONSTRUCTION
+dwac.uavAlt = 600      		      	 	-- limits opfor units visible to the uav, on Sea level (meter)
+dwac.uavSpeed = 111.000					-- 111 x 3,6 is 400km/h
+dwac.uavPilot = "GRIM"					-- ? Group name
+dwac.uavCallsign = "Pontiac11"   		-- Call sign shown as
+dwac.uavGroup = "UAV"        			-- Group name
+
+-- Repair
+dwac.repairLimit = false            	-- Limit Repair once (true) unlimited (false)
+-- UNDER CONSTRUCTION
+dwac.repairAltitude = 762	          	-- On Sea level (meter)
+dwac.repairSpeed = 74.000            	-- meters/second (speed is x 3.6 to get km/h) 74 is approx 266,4 km/h
+dwac.repairType = "CH-47D"          	-- CH-47D
+dwac.repairPilot = "Lightyear"			-- ? Group name
+dwac.repairCallsign = "Pontiac12"   	-- Call sign shown as 
+dwac.repairGroup = "Support"       		-- Group name
+dwac.repairNum = "112"            	  	-- Support number
+dwac.repairLivery = "ch-47_green neth"  -- Livery
+dwac.repairmessageDuration = 270 		-- seconds
+
+-- Illumination
+dwac.mapIlluminationAltitude = 700  	-- Altitude(meters AGL) the illumination bomb appears determines duration (300sec max)/effectiveness
+dwac.illuminationPower = 1000000    	-- 1 to 1000000(max) brightness
+dwac.illuminationUnits = 3          	-- number of illum bombs deployed in a star pattern
+dwac.illuminationRadius = 500       	-- units deployed in meters from target point
+
+-- FAC
+dwac.facEnableSmokeTarget = true    	-- allows FAC-A smoking of targets
+dwac.facEnableLazeTarget = true    		-- allows FAC-A to laze a target (controls appearance in F10 menu)
+dwac.facEnableInfraRedTarget = true 	-- allows FAC-A to put an NVG visible infrared beam on target (with laser).  Not recommended for PvP I suppose.
 
 
-dwac.facMaxEngagmentRange = 4300 -- meters
+dwac.facMaxEngagmentRange = 4300    	-- meters
 dwac.facMaxDetectionRange = 6000
-dwac.maxTargetTracking = 5
-dwac.scanForTargetFrequency = 15 -- longer period reduces the chance of failed target selection due to menu update collision
+dwac.maxTargetTracking = 7
+dwac.scanForTargetFrequency = 15    	-- longer period reduces the chance of failed target selection due to menu update collision
 dwac.displayCurrentTargetFrequency = 5
 
-dwac.MapRequest = {SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4}
-dwac.messageDuration = 20 -- seconds
+dwac.MapRequest = {SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4, REPAIR = 5, DEBUG = 6}
+dwac.messageDuration = 20 				-- seconds
+
 dwac.facAMenuTexts = {
   baseMenu = "FAC-A",
   smokeTarget = "Smoke target",
@@ -91,147 +137,557 @@ dwac.facSmokeColors = {
   "Blue"
 }
 
+-- ########################################################################################################################
+-- ###################################################   UAV  - In AIR ####################################################
+-- ########################################################################################################################
 dwac.uav = {
-  ["frequency"] = 121,
-  ["modulation"] = 0,
-  ["groupId"] = nil,
-  ["tasks"] = 
-  {
-  }, -- end of ["tasks"]
-  ["route"] = 
-  {
-    ["points"] = 
+    ["modulation"] = 0,
+    ["tasks"] = 
     {
-      [1] = 
-      {
-        ["alt"] = dwac.uavAltitude,
-        ["type"] = "Turning Point",
-        ["action"] = "Turning Point",
-        ["alt_type"] = "BARO",
-        ["form"] = "Turning Point",
-        ["y"] = 601619.56776342,
-        ["x"] = -292447.60082171,
-        ["speed"] = dwac.uavSpeed,
-        ["task"] = 
+    }, -- end of ["tasks"]
+    ["radioSet"] = false,
+    ["task"] = "Reconnaissance",
+    ["uncontrolled"] = false,
+    ["route"] = 
+    {
+        ["points"] = 
         {
-          ["id"] = "ComboTask",
-          ["params"] = 
-          {
-            ["tasks"] = 
+            [1] = 
             {
-              [1] = 
-              {
-                ["enabled"] = true,
-                ["auto"] = false,
-                ["id"] = "Orbit",
-                ["number"] = 2,
-                ["params"] = 
+                ["alt"] = 914.4,
+                ["action"] = "Turning Point",
+                ["alt_type"] = "BARO",
+                ["speed"] = 111,
+                ["task"] = 
                 {
-                  ["altitude"] = dwac.uavAltitude,
-                  ["pattern"] = "Circle",
-                  ["speed"] = dwac.uavSpeed,
-                }, -- end of ["params"]
-              }, -- end of [2]
-            }, -- end of ["tasks"]
-          }, -- end of ["params"]
-        }, -- end of ["task"]
-      }
-    }, -- end of ["points"]
-  }, -- end of ["route"]
-  ["hidden"] = false,
-  ["units"] = 
-  {
-    [1] = 
+                    ["id"] = "ComboTask",
+                    ["params"] = 
+                    {
+                        ["tasks"] = 
+                        {
+                            [1] = 
+                            {
+                                ["enabled"] = true,
+                                ["auto"] = true,
+                                ["id"] = "WrappedAction",
+                                ["number"] = 1,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "EPLRS",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                            ["groupId"] = 1,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [1]
+                            [2] = 
+                            {
+                                ["enabled"] = true,
+                                ["auto"] = false,
+                                ["id"] = "WrappedAction",
+                                ["number"] = 2,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "SetInvisible",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [2]
+                        }, -- end of ["tasks"]
+                    }, -- end of ["params"]
+                }, -- end of ["task"]
+                ["type"] = "Turning Point",
+                ["ETA"] = 0,
+                ["ETA_locked"] = true,
+                ["y"] = 74498.046875,
+                ["x"] = 8875.3984375,
+                ["formation_template"] = "",
+                ["speed_locked"] = true,
+            }, -- end of [1]
+            [2] = 
+            {
+                ["alt"] = 914.4,
+                ["action"] = "Turning Point",
+                ["alt_type"] = "BARO",
+                ["speed"] = 56.013888888889,
+                ["task"] = 
+                {
+                    ["id"] = "ComboTask",
+                    ["params"] = 
+                    {
+                        ["tasks"] = 
+                        {
+                            [1] = 
+                            {
+                                ["enabled"] = true,
+                                ["auto"] = false,
+                                ["id"] = "Orbit",
+                                ["number"] = 1,
+                                ["params"] = 
+                                {
+                                    ["altitude"] = 914.4,
+                                    ["pattern"] = "Circle",
+                                    ["speed"] = 55.555555555556,
+                                }, -- end of ["params"]
+                            }, -- end of [1]
+                            [2] = 
+                            {
+                                ["enabled"] = true,
+                                ["auto"] = false,
+                                ["id"] = "WrappedAction",
+                                ["number"] = 2,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "Option",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                            ["name"] = 6,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [2]
+                        }, -- end of ["tasks"]
+                    }, -- end of ["params"]
+                }, -- end of ["task"]
+                ["type"] = "Turning Point",
+                ["ETA"] = 241.60473223726,
+                ["ETA_locked"] = false,
+                ["y"] = 82376.916415147,
+                ["x"] = -2127.8499599822,
+                ["formation_template"] = "",
+                ["speed_locked"] = true,
+            }, -- end of [2]
+        }, -- end of ["points"]
+    }, -- end of ["route"]
+    ["groupId"] = 1,
+    ["hidden"] = false,
+    ["units"] = 
     {
-      ["alt"] = dwac.uavAltitude,
-      ["hardpoint_racks"] = false,
-      ["alt_type"] = "BARO",
-      ["livery_id"] = nil,
-      ["skill"] = "Random",
-      ["speed"] = dwac.uavSpeed,
-      ["AddPropAircraft"] = 
-      {
-      }, -- end of ["AddPropAircraft"]
-      ["type"] = "MQ-9 Reaper",
-      ["unitId"] = 10,
-      ["psi"] = 1.7703702498393,
-      ["parking_id"] = "30",
-      ["x"] = -282214.0,
-      ["name"] = "Aerial-1-1",
-      ["payload"] = 
-      {
-        ["fuel"] = 1000
-      }, -- end of ["payload"]
-      ["onboard_num"] = "011",
-      ["callsign"] = 
-      {
-        [1] = 1,
-        [2] = 1,
-        ["name"] = "Enfield11",
-        [3] = 1,
-      }, -- end of ["callsign"]
-      ["heading"] = -1.7703702498393,
-      ["y"] = 645912.000,
-    } -- end of [1]
-  }, -- end of ["units"]
-  ["y"] = 645912.000,
-  ["radioSet"] = false,
-  ["name"] = "Aerial-1",
-  ["communication"] = true,
-  ["x"] = -282214.000,
-  ["start_time"] = 0,
-  ["task"] = "R",
-  ["uncontrolled"] = false,
+        [1] = 
+        {
+            ["alt"] = 914.4,
+            ["alt_type"] = "BARO",
+            ["livery_id"] = "'camo' scheme",
+            ["skill"] = "High",
+            ["speed"] = 111,
+            ["type"] = "MQ-9 Reaper",
+            ["unitId"] = 1,
+            ["psi"] = -2.5201762879326,
+            ["y"] = 74498.046875,
+            ["x"] = 8875.3984375,
+            ["name"] = "Grim-1-1",
+            ["payload"] = 
+            {
+                ["pylons"] = 
+                {
+                }, -- end of ["pylons"]
+                ["fuel"] = 100,
+                ["flare"] = 0,
+                ["chaff"] = 0,
+                ["gun"] = 100,
+            }, -- end of ["payload"]
+            ["heading"] = 2.5201762879326,
+            ["callsign"] = 
+            {
+                [1] = 8,
+                [2] = 1,
+                [3] = 1,
+                ["name"] = "Pontiac11",
+            }, -- end of ["callsign"]
+            ["onboard_num"] = "112",
+        }, -- end of [1]
+    }, -- end of ["units"]
+    ["y"] = 74498.046875,
+    ["x"] = 8875.3984375,
+    ["name"] = "Grim-1",
+    ["communication"] = true,
+    ["start_time"] = 0,
+    ["frequency"] = 251,
 }
 dwac.uavInFlight = {
     [coalition.side.RED] = false,
     [coalition.side.BLUE] = false,
 }
 
+
+-- ########################################################################################################################
+-- ################################################   UAV  - From Airfield ################################################
+-- ########################################################################################################################
+dwac.uavAirfield = {
+    ["modulation"] = 0,
+    ["tasks"] = 
+    {
+    }, -- end of ["tasks"]
+    ["radioSet"] = false,
+    ["task"] = "Reconnaissance",
+    ["uncontrolled"] = false,
+    ["route"] = 
+    {
+        ["points"] = 
+        {
+            [1] = 
+            {
+                ["alt"] = 300,
+                ["action"] = "From Parking Area Hot",
+                ["alt_type"] = "BARO",
+                ["speed"] = 111.11111111111,
+                ["task"] = 
+                {
+                    ["id"] = "ComboTask",
+                    ["params"] = 
+                    {
+                        ["tasks"] = 
+                        {
+                            [1] = 
+                            {
+                                ["number"] = 1,
+                                ["auto"] = true,
+                                ["id"] = "WrappedAction",
+                                ["enabled"] = true,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "EPLRS",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                            ["groupId"] = 1,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [1]
+                            [2] = 
+                            {
+                                ["number"] = 2,
+                                ["auto"] = false,
+                                ["id"] = "WrappedAction",
+                                ["enabled"] = true,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "SetInvisible",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [2]
+                            [3] = 
+                            {
+                                ["enabled"] = true,
+                                ["auto"] = false,
+                                ["id"] = "WrappedAction",
+                                ["number"] = 3,
+                                ["params"] = 
+                                {
+                                    ["action"] = 
+                                    {
+                                        ["id"] = "Option",
+                                        ["params"] = 
+                                        {
+                                            ["value"] = true,
+                                            ["name"] = 6,
+                                        }, -- end of ["params"]
+                                    }, -- end of ["action"]
+                                }, -- end of ["params"]
+                            }, -- end of [3]
+                        }, -- end of ["tasks"]
+                    }, -- end of ["params"]
+                }, -- end of ["task"]
+                ["type"] = "TakeOffParkingHot",
+                ["ETA"] = 0,
+                ["ETA_locked"] = true,
+                ["y"] = 74498.046875,
+                ["x"] = 8875.3984375,
+                ["formation_template"] = "",
+                ["airdromeId"] = 14,
+                ["speed_locked"] = true,
+            }, -- end of [1]
+            [2] = 
+            {
+                ["alt"] = 300,
+                ["action"] = "Turning Point",
+                ["alt_type"] = "BARO",
+                ["speed"] = 111.11111111111,
+                ["task"] = 
+                {
+                    ["id"] = "ComboTask",
+                    ["params"] = 
+                    {
+                        ["tasks"] = 
+                        {
+                            [1] = 
+                            {
+                                ["number"] = 1,
+                                ["auto"] = false,
+                                ["id"] = "Orbit",
+                                ["enabled"] = true,
+                                ["params"] = 
+                                {
+                                    ["altitude"] = 914.4, -- meter
+                                    ["pattern"] = "Circle",
+                                    ["speed"] = 55.555555555556,
+                                }, -- end of ["params"]
+                            }, -- end of [1]
+                        }, -- end of ["tasks"]
+                    }, -- end of ["params"]
+                }, -- end of ["task"]
+                ["type"] = "Turning Point",
+                ["ETA"] = 105.92256447724,
+                ["ETA_locked"] = false,
+                ["y"] = 81559.663450253,
+                ["x"] = -539.85641851914,
+                ["formation_template"] = "",
+                ["speed_locked"] = true,
+            }, -- end of [2]
+        }, -- end of ["points"]
+    }, -- end of ["route"]
+    ["groupId"] = 1,
+    ["hidden"] = false,
+    ["units"] = 
+    {
+        [1] = 
+        {
+            ["alt"] = 300,
+            ["alt_type"] = "BARO",
+            ["livery_id"] = "'camo' scheme",
+            ["skill"] = "High",
+            ["parking"] = "30",
+            ["speed"] = 111.11111111111,
+            ["type"] = "MQ-9 Reaper",
+            ["unitId"] = 1,
+            ["psi"] = -2.4980796198651,
+            ["parking_id"] = "24",
+            ["x"] = 8875.3984375,
+            ["name"] = "Grim-1-1",
+            ["payload"] = 
+            {
+                ["pylons"] = 
+                {
+                }, -- end of ["pylons"]
+                ["fuel"] = 100,
+                ["flare"] = 0,
+                ["chaff"] = 0,
+                ["gun"] = 100,
+            }, -- end of ["payload"]
+            ["y"] = 74498.046875,
+            ["heading"] = 2.4163455909405,
+            ["callsign"] = 
+            {
+                [1] = 8,
+                [2] = 1,
+                [3] = 1,
+                ["name"] = "Pontiac11",
+            }, -- end of ["callsign"]
+            ["onboard_num"] = "112",
+        }, -- end of [1]
+    }, -- end of ["units"]
+    ["y"] = 74498.046875,
+    ["x"] = 8875.3984375,
+    ["name"] = "Grim-1",
+    ["communication"] = true,
+    ["start_time"] = 0,
+    ["frequency"] = 251,
+}
+dwac.uavInFlight = {
+    [coalition.side.RED] = false,
+    [coalition.side.BLUE] = false,
+}
+
+-- ########################################################################################################################
+-- ######################################################   REPAIR   ######################################################
+-- ########################################################################################################################
+dwac.repair = {
+    ["modulation"] = 0,
+    ["tasks"] = 
+    {
+    }, -- end of ["tasks"]
+    ["radioSet"] = false,
+    ["task"] = "Transport",
+    ["uncontrolled"] = false,
+    ["route"] = 
+    {
+        ["points"] = 
+        {
+            [1] = 
+            {
+                ["alt"] = 300,
+                ["action"] = "From Parking Area Hot",
+                ["alt_type"] = "RADIO",
+                ["speed"] = 41.666666666667,
+                ["task"] = 
+                {
+                    ["id"] = "ComboTask",
+                    ["params"] = 
+                    {
+                        ["tasks"] = 
+                        {
+                            [1] = 
+                            {
+                                ["number"] = 1,
+                                ["auto"] = false,
+                                ["id"] = "Land",
+                                ["enabled"] = true,
+                                ["params"] = 
+                                {
+                                    ["y"] = 72902.272574181,
+                                    ["x"] = 7809.66246567,
+                                    ["duration"] = 300,
+                                    ["durationFlag"] = false,
+                                }, -- end of ["params"]
+                            }, -- end of [1]
+                        }, -- end of ["tasks"]
+                    }, -- end of ["params"]
+                }, -- end of ["task"]
+                ["type"] = "TakeOffParkingHot",
+                ["ETA"] = 0,
+                ["ETA_locked"] = true,
+                ["y"] = 74368.84375,
+                ["x"] = 8878.3486328125,
+                ["formation_template"] = "",
+                ["airdromeId"] = 14,
+                ["speed_locked"] = true,
+            }, -- end of [1]
+        }, -- end of ["points"]
+    }, -- end of ["route"]
+    ["groupId"] = 1,
+    ["hidden"] = false,
+    ["units"] = 
+    {
+        [1] = 
+        {
+            ["alt"] = 300,
+            ["alt_type"] = "RADIO",
+            ["livery_id"] = "ch-47_green neth",
+            ["skill"] = "Excellent",
+            ["parking"] = "15",
+            ["ropeLength"] = 15,
+            ["speed"] = 41.666666666667,
+            ["type"] = "CH-47D",
+            ["unitId"] = 1,
+            ["psi"] = 0,
+            ["parking_id"] = "23",
+            ["x"] = 8878.3486328125,
+            ["name"] = "Lightyear-1-1",
+            ["payload"] = 
+            {
+                ["pylons"] = 
+                {
+                }, -- end of ["pylons"]
+                ["fuel"] = "3600",
+                ["flare"] = 120,
+                ["chaff"] = 120,
+                ["gun"] = 100,
+            }, -- end of ["payload"]
+            ["y"] = 74368.84375,
+            ["heading"] = 2.6241508410591,
+            ["callsign"] = 
+            {
+                [1] = 8,
+                [2] = 2,
+                [3] = 1,
+                ["name"] = "Pontiac21",
+            }, -- end of ["callsign"]
+            ["onboard_num"] = "113",
+        }, -- end of [1]
+    }, -- end of ["units"]
+    ["y"] = 74368.84375,
+    ["x"] = 8878.3486328125,
+    ["name"] = "Lightyear",
+    ["communication"] = true,
+    ["start_time"] = 0,
+    ["frequency"] = 127.5,
+}
+dwac.repairInFlight = {
+    [coalition.side.RED] = false,
+    [coalition.side.BLUE] = false,
+}
+
+dwac.farpAmmo = {
+    ["category"] = "Fortifications",
+    ["shape_name"] = "SetkaKP",
+    ["type"] = "FARP Ammo Dump Coating",
+    ["unitId"] = 4,
+    ["rate"] = 50,
+    ["y"] = 78836.311026623,
+    ["x"] = 8449.6071372688,
+    ["name"] = "DWAC_AMMO",
+    ["heading"] = 1.1693705988362,
+}
+
+dwac.farpHeliports = {
+    ["category"] = "Heliports",
+    ["shape_name"] = "invisiblefarp",
+    ["type"] = "Invisible FARP",
+    ["unitId"] = 1,
+    ["heliport_callsign_id"] = 3,
+    ["heliport_modulation"] = 0,
+    ["rate"] = 100,
+    ["y"] = 78840.621464855,
+    ["x"] = 8433.3601008565,
+    ["name"] = "DWAC_FARP",
+    ["heliport_frequency"] = 127.5,
+    ["heading"] = 0,
+}
+
 -- ##########################
 -- Methods
 -- ##########################
 
-local function InitFacA()
-  env.info( "InitFacA()" )
-  for _, _client in pairs( _DATABASE.CLIENTS ) do
-    local _type = _client:GetTypeName()
-    if dwac.IsFacAUnit( _type ) then
-      _client.CurrentTarget = nil
-      _client.Targets = {}      
-      _client.CurrentLaserCode = "disabled"
-      _client.CurrentSmokeColor = "disabled"
-      _client.FacAMenu = nil
-      _client.SpotterDetectionAngles = { 1, 2, 12, 11, 10, 9, 8, 7, 6 } -- co-pilot visibility
-      
-      if dwac.facEnableLazeTarget then
-        _client.CurrentLaserCode = dwac.facLaserCodes[1] -- 1688
-      end
-      
-      if dwac.facEnableSmokeTarget then
-        _client.CurrentSmokeColor = dwac.facSmokeColors[2] -- red
-      end
-      
-      dwac.SetupBaseFacAMenu( _client )
-      
-      -- Start target detection
-      local _targetScanObject = SCHEDULER:New( _client )
-      _targetScanObject:Schedule( _client, dwac.ScanForTargets, { _client }, 1, dwac.scanForTargetFrequency, 0.2 ) -- 20% variation on repeat timer
-      
-      -- Start Menu Refresh
-      local _masterObject = SCHEDULER:New( _client )
-      _masterObject:Schedule( _client, dwac.RefreshFacATargetList, { _client }, 1, 10 )
-      
-      -- Display of current target
-      local _currentTargetObject = SCHEDULER:New( _client )
-      _currentTargetObject:Schedule( _client, dwac.DisplayCurrentTarget, { _client }, 1, dwac.displayCurrentTargetFrequency )
+local function setUpFacA( _client )
+    _DATABASE:I( "FAC-A client started: " .. _client:GetName() )
+    _client.CurrentTarget = nil
+    _client.Targets = {}      
+    _client.CurrentLaserCode = "disabled"
+    _client.CurrentSmokeColor = "disabled"
+    _client.FacAMenu = nil
+    _client.SpotterDetectionAngles = { 1, 2, 12, 11, 10, 9, 8, 7, 6 } -- co-pilot visibility
+    
+    if dwac.facEnableLazeTarget then
+      _client.CurrentLaserCode = dwac.facLaserCodes[1] -- 1688
     end
-  end
+    
+    if dwac.facEnableSmokeTarget then
+      _client.CurrentSmokeColor = dwac.facSmokeColors[2] -- red
+    end
+    
+    dwac.SetupBaseFacAMenu( _client )
+    
+    -- Start target detection
+    local _targetScanObject = SCHEDULER:New( _client )
+    _targetScanObject:Schedule( _client, dwac.ScanForTargets, { _client }, 1, dwac.scanForTargetFrequency, 0.2 ) -- 20% variation on repeat timer
+    
+    -- Start Menu Refresh
+    local _masterObject = SCHEDULER:New( _client )
+    _masterObject:Schedule( _client, dwac.RefreshFacATargetList, { _client }, 1, 10 )
+    
+    -- Display of current target
+    local _currentTargetObject = SCHEDULER:New( _client )
+    _currentTargetObject:Schedule( _client, dwac.DisplayCurrentTarget, { _client }, 1, dwac.displayCurrentTargetFrequency )
 end
-dwac.InitFacA = InitFacA
+dwac.setUpFacA = setUpFacA
 
+-- Function FAC Unit
 local function IsFacAUnit( _type )
   for _, _name in pairs( dwac.facUnits ) do
+    if _type ~= nil then
+      env.info( "Check isFacAUnit: " .. _type )
+    end
     if _name:gsub( "%s+", "" ) == _type then 
       return true
     end
@@ -240,8 +696,9 @@ local function IsFacAUnit( _type )
 end
 dwac.IsFacAUnit = IsFacAUnit
 
+-- Function FAC Base
 local function SetupBaseFacAMenu( _client )
-  local _group = GROUP:FindByName( _client.GroupName )
+  local _group = GROUP:FindByName( _client:GetClientGroupName() )
   _client.FacAMenu = MENU_GROUP:New( _group, dwac.facAMenuTexts.baseMenu )
   
   -- Show Current Settings
@@ -285,24 +742,23 @@ dwac.ShowCurrentFacASettings = ShowCurrentFacASettings
 
 local function RefreshFacATargetList( _client )
   local _targetMenu = _client.FacAMenu:GetMenu( dwac.facAMenuTexts.targets )
-  local _group = GROUP:FindByName( _client.GroupName )
+  local _group = GROUP:FindByName( _client:GetClientGroupName() )
   _targetMenu:RemoveSubMenus()
   local _sortedTargets = dwac.sortTargets( _client.Targets )
   local _limitedTargets = dwac.limitTargets( _sortedTargets )
-  
-  _client:E( "Limited Targets: " .. #_limitedTargets )
-  if #_limitedTargets == 0 then
-    dwac.SetCurrentFacATarget( _client, nil )    
-  else
-    local _currentTargetStillInRange = false
-    for _,_target in pairs( _limitedTargets ) do
+
+  local _currentTargetStillInRange = false
+  if #_limitedTargets > 0 then
+    for _index,_target in ipairs( _limitedTargets ) do
       if _client.CurrentTarget ~= nil and _target.id == _client.CurrentTarget.id then
+        dwac.SetCurrentFacATarget( _client, _target )
         _currentTargetStillInRange = true
       end
-      MENU_GROUP_COMMAND:New( _group, _target.type, _targetMenu, dwac.SetCurrentFacATarget, _client, _target )
+      MENU_GROUP_COMMAND:New( _group, "(" .. _index .. ")" .. _target.type, _targetMenu, dwac.SetCurrentFacATarget, _client, _target )
     end
     
-    if _currentTargetStillInRange == false then
+    if _client.CurrentTarget ~= nil and _currentTargetStillInRange == false then
+      MESSAGE:New( _client.CurrentTarget.type .. ": Target lost", 3, "Current target: ", true ):ToClient( _client )
       dwac.SetCurrentFacATarget( _client, nil )
     end
   end
@@ -324,11 +780,12 @@ local function SetCurrentFacATarget( _client, _target )
     
     local _laseTargetMenu = _client.FacAMenu:GetMenu( dwac.facAMenuTexts.laseTarget )
     if _laseTargetMenu ~= nil then
-      _laseTargetMenu:Remove( __laseTargetMenu.MenuStamp, _laseTargetMenu.MenuTag )
+      _laseTargetMenu:Remove( _laseTargetMenu.MenuStamp, _laseTargetMenu.MenuTag )
     end
     dwac.LaseTarget( _client ) -- turn off laser
   else
-    local _group = GROUP:FindByName( _client.GroupName )
+    local _group = GROUP:FindByName( _client:GetClientGroupName() )
+    _client.CurrentTarget.dist = dwac.getDistance( _client:GetCoordinate(), _target.unit:GetCoordinate() )
     MENU_GROUP_COMMAND:New( _group, dwac.facAMenuTexts.smokeTarget, _client.FacAMenu, dwac.SmokeTarget,  _client )
     MENU_GROUP_COMMAND:New( _group, dwac.facAMenuTexts.laseTarget, _client.FacAMenu, dwac.LaseTarget,  _client )
   end
@@ -337,8 +794,11 @@ dwac.SetCurrentFacATarget = SetCurrentFacATarget
 
 local function DisplayCurrentTarget( _client )
   if _client.CurrentTarget ~= nil then
-    local _vector = dwac.getClockDirection( _client, _client.CurrentTarget.unit:GetDCSObject() )
-    MESSAGE:New( _client.CurrentTarget.type .. " at " .. _vector .. " o'clock - " .. math.floor( _client.CurrentTarget.dist ) .. "m", 3, "Current target: ", true ):ToClient( _client )
+    local _target = _client.CurrentTarget.unit:GetDCSObject()
+    if _target ~= nil then
+      local _vector = dwac.getClockDirection( _client,  _target)
+      MESSAGE:New( _client.CurrentTarget.type .. " at " .. _vector .. " o'clock - " .. math.floor( _client.CurrentTarget.dist ) .. "m", 3, "Current target: ", true ):ToClient( _client )
+    end
   end
 end
 dwac.DisplayCurrentTarget = DisplayCurrentTarget
@@ -536,7 +996,7 @@ end
 dwac.sortTargets = sortTargets
 
 local function limitTargets( _targets )
-  local _results = dwac.deepCopy( _targets )
+  local _results = {} --dwac.deepCopy( _targets )
   local _limit = 0
   if #_targets < dwac.maxTargetTracking then
       _limit = #_targets
@@ -563,6 +1023,8 @@ function IsSpotterVisible( _client, _target )
 end
 dwac.IsSpotterVisible = IsSpotterVisible
 
+
+-- Read markers F10 map
 local function getMarkerRequest(requestText)
     local lowerText = string.lower(requestText)
     local isSmokeRequest = lowerText:match("^%s*-smoke;%a+%s*$")
@@ -580,6 +1042,16 @@ local function getMarkerRequest(requestText)
         return dwac.MapRequest.UAV
     end
 
+    local isREPAIRrequest = lowerText:match("^%s*-repair%s*$")
+    if isREPAIRrequest then
+        return dwac.MapRequest.REPAIR
+    end
+
+	local isDEBUGrequest = lowerText:match("^%s*-debug%s*$")
+    if isDEBUGrequest then
+        return dwac.MapRequest.DEBUG
+    end
+	
     local isVersionRequest = lowerText:match("^-version%s*$")
     if isVersionRequest then
         return dwac.MapRequest.VERSION
@@ -594,6 +1066,7 @@ local function setMapSmoke(requestText, vector)
 end
 dwac.setMapSmoke = setMapSmoke
 
+-- Function Illumination
 local function setMapIllumination(vector)
     if dwac.illuminationUnits == nil or dwac.illuminationUnits < 0 then
         _DATABASE:E( "dwac.illuminationUnits is nil or negative" )
@@ -620,8 +1093,9 @@ local function setMapIllumination(vector)
 end
 dwac.setMapIllumination = setMapIllumination
 
+-- Function UAV active or not
 local function uavSearch(_unit, args)
-    if _unit:getTypeName() == "MQ-9 Reaper" and
+    if _unit:getTypeName() == dwac.uavType and
         _unit:getCoalition() == args[1] and
         _unit:inAir() then
         dwac.uavInFlight[args[1]] = true -- Probably a problem.  Coalition collision?
@@ -629,6 +1103,7 @@ local function uavSearch(_unit, args)
 end
 dwac.uavSearch = uavSearch
 
+-- Function UAV Spawn
 local function setMapUAV(panel)
     local vector = panel.pos
     local _author = panel.author
@@ -666,30 +1141,176 @@ local function setMapUAV(panel)
             -- get nearest airfield to vector
             local nearestAirfield = dwac.getNearestAirfield(vector, panel.coalition)
             local nearestAirfieldPoint = nearestAirfield:getPoint()
+
+			local nearestAirfieldID = nearestAirfield:getID()
+			dwac.uavnearestAirfieldID = nearestAirfieldID -- Set airport ID
+
             -- spawn UAV at altitude with directions to fly to vector and begin orbit.
             -- Set UAV position
             dwac.uav.x = nearestAirfieldPoint.x
             dwac.uav.y = nearestAirfieldPoint.z  -- don't ask me why
-            dwac.uav["units"][1].x = nearestAirfieldPoint.x
-            dwac.uav["units"][1].y = nearestAirfieldPoint.z
-            dwac.uav["route"]["points"][1].x = vector.x
-            dwac.uav["route"]["points"][1].y = vector.z
+            dwac.uav["units"][1].x = nearestAirfieldPoint.x 																				-- determine player location
+            dwac.uav["units"][1].y = nearestAirfieldPoint.z 																				-- determine player location
+            dwac.uav["units"][1].skill = dwac.aiSkill																						-- AI Skill
+            dwac.uav["units"][1].livery_id = dwac.uavLivery																					-- UAV Livery
+            dwac.uav["units"][1].type = dwac.uavType																						-- UAV Type
+            dwac.uav["units"][1].onboard_num = dwac.uavNum																					-- UAV Number
+            dwac.uav["route"]["points"][2].x = vector.x																						-- F10 Waypoint location
+            dwac.uav["route"]["points"][2].y = vector.z																						-- F10 Waypoint location
+            dwac.uav["route"]["points"][2].alt = dwac.uavAltitude																			-- Waypoint Altitude
+            dwac.uav["route"]["points"][2].alt_type = dwac.alt_Type																			-- Altitude MGL / SL
+            dwac.uav["route"]["points"][2]["task"]["params"]["tasks"][1]["params"].altitude = dwac.uavAltitude								-- Waypoint Altitude
+            dwac.uav["route"]["points"][1].alt = dwac.uavAltitude																			-- Waypoint Altitude
+            dwac.uav["route"]["points"][1].alt_type = dwac.alt_Type																			-- Altitude MGL / SL
+            dwac.uav["route"]["points"][1]["task"]["params"]["tasks"][2]["params"]["action"]["params"].value = dwac.uavInvisible			-- Unit invisible or not
 
-            coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uav)
-            trigger.action.outTextForCoalition(panel.coalition, "Launching an MQ-9 Reaper from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+			if(dwac.spawnAir == 0)
+				then
+				-- Take off FROM airfield, so spawnAir == 0
+					dwac.uavAirfield["route"]["points"][1].airdromeId = dwac.uavnearestAirfieldID 											-- Sets AirfieldID for Repair unit to start from.
+					
+					trigger.action.outTextForCoalition(panel.coalition, "CAUTION: Launching an UAV from " .. nearestAirfield:getName(), dwac.uavmessageDuration, false)
+					coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uavAirfield)
+				else
+				-- Take off IN air, so spawnAir == 1
+					dwac.uav["route"]["points"][1].x = vector.x																				-- Starting Coordinates
+					dwac.uav["route"]["points"][1].y = vector.z																				-- Starting Coordinates
+
+					trigger.action.outTextForCoalition(panel.coalition, "CAUTION: UAV departing from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+					coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uav)
+				end
+
+
+
             local lat, lon, alt = coord.LOtoLL(vector)
-            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested MQ-9 for Lat: " .. lat .. " Lon: " .. lon )
-            dwac.uavInFlight[panel.coalition] = true
+            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested UAV for Lat: " .. lat .. " Lon: " .. lon )
+            dwac.uavInFlight[panel.coalition] = dwac.uavLimit
+		else
+					trigger.action.outTextForCoalition(panel.coalition, "UAV allready airborn", dwac.messageDuration, false)	-- Message UAV allready in the AIR
+						-- UNDER CONSTRUCTION Needs to be inserted to UAV Coordinates
+						--dwac.uav["route"]["points"][2].x = vector.x																			-- New F10 Waypoint location
+						--dwac.uav["route"]["points"][2].y = vector.z																			-- New F10 Waypoint location
+					dwac.uavInFlight[panel.coalition] = dwac.uavLimit
         end
     end, nil, timer.getTime() + 5)
     return true
 end
 dwac.setMapUAV = setMapUAV
+-- End Function UAV
 
+-- Function REPAIR active or not
+local function repairSearch(_unit, args)
+    if _unit:getTypeName() == dwac.repairType and
+        _unit:getCoalition() == args[1] and
+        _unit:inAir() then
+        dwac.repairInFlight[args[1]] = true -- Probably a problem.  Coalition collision?
+    end
+end
+dwac.repairSearch = repairSearch
+
+-- Function REPAIR Spawn
+local function setMapREPAIR(panel)
+    local vector = panel.pos
+    local _author = panel.author
+    local _playerUnit = nil
+    for _, _group in pairs(coalition.getGroups(panel.coalition)) do
+        for _, _unit in pairs(_group:getUnits()) do
+            if _unit:getPlayerName() == _author then
+                _playerUnit = _unit
+                break
+            end
+        end
+        if _playerUnit ~= nil then
+            break
+        end
+    end
+    if _playerUnit == nil then
+        return false
+    end
+    local _country = _playerUnit:getCountry()
+    local _vol = {
+        id = world.VolumeType.SPHERE,
+        params = {
+            point = vector,
+            radius = 150000 -- 150 kilometer radius
+        }
+    }
+    if dwac.repairInFlight[panel.coalition] then
+        return true -- return without doing anything, but clear the marker
+    end
+    world.searchObjects(Object.Category.UNIT, _vol, dwac.repairSearch, {panel.coalition})
+
+    -- delay to let DCS locate a REPAIR or not
+    timer.scheduleFunction(function()
+        if not dwac.repairInFlight[panel.coalition] then
+            -- get nearest airfield to vector
+            local nearestAirfield = dwac.getNearestAirfield(vector, panel.coalition)
+            local nearestAirfieldPoint = nearestAirfield:getPoint()
+
+			local nearestAirfieldID = nearestAirfield:getID()
+			dwac.repairnearestAirfieldID = nearestAirfieldID -- Set airport ID
+
+            -- spawn REPAIR with directions to fly to vector and Land.
+            -- Get best REPAIR position
+            dwac.repair.x = nearestAirfieldPoint.x
+            dwac.repair.y = nearestAirfieldPoint.z  -- don't ask me why
+					-- For Spawn in AIR
+            --dwac.repair["units"][1].x = nearestAirfieldPoint.x	-- Coordinates to start from
+            --dwac.repair["units"][1].y = nearestAirfieldPoint.z	-- Coordinates to start from
+			
+					-- or For Spawn on AIRFIELD
+			dwac.repair["route"]["points"][1].airdromeId = dwac.repairnearestAirfieldID 				-- Sets AirfieldID for Repair unit to start from.
+			
+					-- Waypoint
+			dwac.repair["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].x = vector.x		-- Waypoint
+            dwac.repair["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].y = vector.z + 20	-- Waypoint (added 20 offset)
+
+            coalition.addGroup(_country, Group.Category.HELICOPTER, dwac.repair)
+			
+			dwac.farpAmmo.x = vector.x + 20		-- Coordinates for Ammo (added 20 offset)
+            dwac.farpAmmo.y = vector.z			-- Coordinates for Ammo
+
+			dwac.farpHeliports.x = vector.x		-- Coordinates for Heliport
+            dwac.farpHeliports.y = vector.z		-- Coordinates for Heliport
+			
+			--[[
+			dwac.farpMarker.mapX = vector.x		-- Coordinates for Marker
+			dwac.farpMarker.mapY = vector.z		-- Coordinates for Marker
+			--]]
+            coalition.addStaticObject(_country, dwac.farpAmmo)
+            coalition.addStaticObject(_country, dwac.farpHeliports)
+
+            --coalition.markToCoalition(_country, dwac.farpMarker)	
+			
+			--coalition.addStaticObject(country.id.USA, staticObj)
+			--coalition.addGroup(country.id.USA, Group.Category.GROUND, groupData)			
+		--trigger.action.outTextForCoalition(panel.coalition, "DEBUG: airfieldID : " .. dwac.repairnearestAirfieldID, dwac.messageDuration, false)
+            trigger.action.outTextForCoalition(panel.coalition, "Launching support from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+
+            local lat, lon, alt = coord.LOtoLL(vector)
+            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested REPAIRS for Lat: " .. lat .. " Lon: " .. lon )
+            dwac.repairInFlight[panel.coalition] = dwac.repairLimit
+        end
+    end, nil, timer.getTime() + 5)
+    return true
+end
+dwac.setMapREPAIR = setMapREPAIR
+-- End Function REPAIR
+
+-- Function Version
 local function showVersion()
     MESSAGE:New( "Version: " .. dwac.version, 5, "DWAC Load" ):ToAll()
 end
 dwac.showVersion = showVersion
+
+-- Function DEBUG
+local function showDebug()
+--unitFuel(Lightyear)
+MESSAGE:New( " : dwac.spawnAir      = " .. dwac.spawnAir, 5, "DEBUG" ):ToAll() -- Debugging flags example
+--MESSAGE:New( " : dwac.uavInvisible  = " .. dwac.uavInvisible, 5, "DEBUG" ):ToAll() -- Debugging flags example
+--MESSAGE:New( " : dwac.fuelLevel = " .. dwac.fuelLevel, 5, "DEBUG" ):ToAll()
+end
+dwac.showDebug = showDebug
 
 local function missionStopHandler(event)
     _DATABASE:E( "DWAC: Closing event handlers")
@@ -702,6 +1323,7 @@ local function missionStopHandler(event)
 end
 dwac.missionStopHandler = missionStopHandler
 
+-- Function Smoke
 local function smokePoint(vector, smokeColor)
     vector.y = vector.y + 2.0
     local lat, lon, alt = coord.LOtoLL(vector)
@@ -795,9 +1417,18 @@ function dwac.dwacEventHandler:onEvent(event)
                         timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
                     end
                     break
+				elseif dwac.enableMapREPAIR and markType == dwac.MapRequest.REPAIR then
+                    if dwac.setMapREPAIR(panel) then
+                        timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
+                    end
+                    break
+				elseif dwac.enableMapDEBUG and markType == dwac.MapRequest.DEBUG then
+                    dwac.showDebug()
+						timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
+                    break
                 elseif markType == dwac.MapRequest.VERSION then
                     dwac.showVersion()
-                    timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
+						timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
                     break
                 end
             end
@@ -806,5 +1437,27 @@ function dwac.dwacEventHandler:onEvent(event)
 end
 world.addEventHandler(dwac.dwacEventHandler)
 
+dwac.showDebug()
 dwac.showVersion()
-dwac.InitFacA()
+
+-- Handle Player entrances
+dwac.ClientSelectHandler = EVENTHANDLER:New()
+dwac.ClientSelectHandler:HandleEvent( EVENTS.PlayerEnterAircraft )
+
+function dwac.ClientSelectHandler:OnEventPlayerEnterAircraft( eventData )
+  _DATABASE:I( "OnPlayerEnterAircraft" )
+  _DATABASE:I( eventData )
+  local _client = CLIENT:FindByName( eventData.IniDCSUnitName )
+  local _type = eventData.IniTypeName
+
+  _DATABASE:I( "InitFacA.Client.Type: " .. _type )
+  if dwac.IsFacAUnit( _type ) then
+    dwac.setUpFacA( _client )
+  end
+end
+
+if dwac.listHeloClientsInLog then
+  for _,_client in pairs( _DATABASE.CLIENTS ) do
+    BASE:I( _client.ClientName )
+  end
+end
