@@ -1,3 +1,4 @@
+do -- Information + Start -- Start (collaps / expand)
 --[[
     Selectable mission features
         - SMOKE: Map targeted (Idea stolen from Tupper of Rotorheads)
@@ -14,8 +15,8 @@
         - UAV: Map targeted
             Usage: On the F10 map, place a comment circle with text of "-uav" and minimize.  Limit one(1) Optional MQ-9 Reaper in flight.
 			
-        - REPAIR: Map targeted
-            Usage: On the F10 map, place a comment circle with text of "-repair" and minimize.  Limit one(1) Optional CH-47D in flight.
+        - SUPPORT: Map targeted
+            Usage: On the F10 map, place a comment circle with text of "-support" and minimize.  Limit one(1) Optional CH-47D in flight.
 
         - DESTROY: 'explode' and then remove all vehicles within x radius of comment circle with text "-destroy".  Limited to players listed
             in dwac.authorizedDestroyers.  Used to reduce the polygon count in areas cleared of threats.
@@ -43,17 +44,20 @@ if _DATABASE == nil then
 end
 
 dwac = {}
-dwac.version = "0.6.0"
+dwac.version = "0.6.1"
 
--- To enable/disable features set their state here
-dwac.enableMapSmoke = true
-dwac.enableMapIllumination = true
-dwac.enableMapUAV = true
-dwac.enableMapREPAIR = true
-dwac.enableMapDEBUG = true
-dwac.listHeloClientsInLog = false   	-- writes out all flyable helos to be compared with CTLD pilotname list
+end
 
--- General / Common Settings
+do -- To enable/disable features set their state here (collaps / expand)
+	dwac.enableMapSmoke = true
+	dwac.enableMapIllumination = true
+	dwac.enableMapUAV = true
+	dwac.enableMapSUPPORT = true
+	dwac.enableMapDEBUG = true
+	dwac.listHeloClientsInLog = false   	-- writes out all flyable helos to be compared with CTLD pilotname list
+end
+
+do -- General / Common Settings (collaps / expand)
 dwac.messageDuration = 20 				-- seconds
 dwac.spawnAir = 1						-- UNDER CONSTRUCTION Spawn units in air (1) or on airfield (0)
 dwac.aiSkill = "Excellent"          	-- Random (Random), Excellent (Ace)
@@ -75,18 +79,18 @@ dwac.uavPilot = "GRIM"					-- ? Group name
 dwac.uavCallsign = "Pontiac11"   		-- Call sign shown as
 dwac.uavGroup = "UAV"        			-- Group name
 
--- Repair
-dwac.repairLimit = false            	-- Limit Repair once (true) unlimited (false)
+-- Support
+dwac.supportLimit = false            	-- Limit support once (true) unlimited (false)
 -- UNDER CONSTRUCTION
-dwac.repairAltitude = 762	          	-- On Sea level (meter)
-dwac.repairSpeed = 74.000            	-- meters/second (speed is x 3.6 to get km/h) 74 is approx 266,4 km/h
-dwac.repairType = "CH-47D"          	-- CH-47D
-dwac.repairPilot = "Lightyear"			-- ? Group name
-dwac.repairCallsign = "Pontiac12"   	-- Call sign shown as 
-dwac.repairGroup = "Support"       		-- Group name
-dwac.repairNum = "112"            	  	-- Support number
-dwac.repairLivery = "ch-47_green neth"  -- Livery
-dwac.repairmessageDuration = 270 		-- seconds
+dwac.supportAltitude = 762	          	-- On Sea level (meter)
+dwac.supportSpeed = 74.000            	-- meters/second (speed is x 3.6 to get km/h) 74 is approx 266,4 km/h
+dwac.supportType = "CH-47D"          	-- CH-47D
+dwac.supportPilot = "Lightyear"			-- ? Group name
+dwac.supportCallsign = "Pontiac12"   	-- Call sign shown as 
+dwac.supportGroup = "Support"       		-- Group name
+dwac.supportNum = "112"            	  	-- Support number
+dwac.supportLivery = "ch-47_green neth"  -- Livery
+dwac.supportmessageDuration = 270 		-- seconds
 
 -- Illumination
 dwac.mapIlluminationAltitude = 700  	-- Altitude(meters AGL) the illumination bomb appears determines duration (300sec max)/effectiveness
@@ -95,7 +99,7 @@ dwac.illuminationUnits = 3          	-- number of illum bombs deployed in a star
 dwac.illuminationRadius = 500       	-- units deployed in meters from target point
 
 -- Destroy
-dwac.authorizedDestroyers = { "[GR] Gakk Simian", "DWAC 1-2 |Buz" }
+dwac.authorizedDestroyers = { "[GR] Gakk Simian", "DWAC 1-2 |Buz", "Killg0re NL", "New callsign" }
 dwac.destroyRadius = 2000               -- meters
 
 -- FAC
@@ -110,7 +114,7 @@ dwac.maxTargetTracking = 7
 dwac.scanForTargetFrequency = 15    	-- longer period reduces the chance of failed target selection due to menu update collision
 dwac.displayCurrentTargetFrequency = 5
 
-dwac.MapRequest = { SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4, REPAIR = 5, DEBUG = 6, DESTROY = 7 }
+dwac.MapRequest = { SMOKE = 1, ILLUMINATION = 2, VERSION = 3, UAV = 4, SUPPORT = 5, DEBUG = 6, DESTROY = 7 }
 dwac.messageDuration = 20 				-- seconds
 
 dwac.facAMenuTexts = {
@@ -143,10 +147,11 @@ dwac.facSmokeColors = {
   "Orange",
   "Blue"
 }
+end
 
 -- ########################################################################################################################
--- ##########################################   UAV  - In AIR #  options in spawn area ####################################
--- ########################################################################################################################
+-- ############################################ UAV  - In AIR #  options in spawn area ####################################
+do -- (collaps / expand)
 dwac.uav = {
     ["modulation"] = 0,
     ["tasks"] = 
@@ -327,11 +332,13 @@ dwac.uavInFlight = {
     [coalition.side.RED] = false,
     [coalition.side.BLUE] = false,
 }
-
+end
+-- ########################################################################################################################
 
 -- ########################################################################################################################
--- ########################################   UAV  - From Airfield #  options in spawn area ###############################
+-- ########################################## UAV  - From Airfield #  options in spawn area ###############################
 -- ########################################################################################################################
+do -- (collaps / expand)
 dwac.uavAirfield = {
     ["modulation"] = 0,
     ["tasks"] = 
@@ -515,11 +522,13 @@ dwac.uavInFlight = {
     [coalition.side.RED] = false,
     [coalition.side.BLUE] = false,
 }
+end
+-- ########################################################################################################################
 
 -- ########################################################################################################################
--- ######################################################   REPAIR   ######################################################
--- ########################################################################################################################
-dwac.repair = {
+-- ################################################# SUPPORT ##############################################################
+do -- (collaps / expand)
+dwac.support = {
     ["modulation"] = 0,
     ["tasks"] = 
     {
@@ -620,7 +629,7 @@ dwac.repair = {
     ["start_time"] = 0,
     ["frequency"] = 127.5,
 }
-dwac.repairInFlight = {
+dwac.supportInFlight = {
     [coalition.side.RED] = false,
     [coalition.side.BLUE] = false,
 }
@@ -651,10 +660,12 @@ dwac.farpHeliports = {
     ["heliport_frequency"] = 127.5,
     ["heading"] = 0,
 }
+end
+-- ########################################################################################################################
 
--- ##########################
--- Methods
--- ##########################
+-- ########################################################################################################################
+-- #################################################### FAC ###############################################################
+do -- FAC (collaps / expand)
 
 local function setUpFacA( _client )
     _DATABASE:I( "FAC-A client started: " .. _client:GetName() )
@@ -1035,8 +1046,12 @@ function IsSpotterVisible( _client, _target )
 end
 dwac.IsSpotterVisible = IsSpotterVisible
 
+end
+-- ########################################################################################################################
 
--- Read markers F10 map
+-- ########################################################################################################################
+-- ############################################# Read markers F10 map #####################################################
+do -- Read markers F10 map (collaps / expand)
 local function getMarkerRequest(requestText)
     local lowerText = string.lower(requestText)
     local isSmokeRequest = lowerText:match("^%s*-smoke;%a+%s*$")
@@ -1054,9 +1069,9 @@ local function getMarkerRequest(requestText)
         return dwac.MapRequest.UAV
     end
 
-    local isREPAIRrequest = lowerText:match("^%s*-repair%s*$")
-    if isREPAIRrequest then
-        return dwac.MapRequest.REPAIR
+    local isSUPPORTrequest = lowerText:match("^%s*-support%s*$")
+    if isSUPPORTrequest then
+        return dwac.MapRequest.SUPPORT
     end
 
 	local isDEBUGrequest = lowerText:match("^%s*-debug%s*$")
@@ -1075,15 +1090,12 @@ local function getMarkerRequest(requestText)
     end
 end
 dwac.getMarkerRequest = getMarkerRequest
-
-local function setMapSmoke(requestText, vector)
-    local lowerText = string.lower(requestText)
-    smokeColor = lowerText:match("^-smoke;(%a+)")
-    return dwac.smokePoint(vector, smokeColor)
 end
-dwac.setMapSmoke = setMapSmoke
+-- ########################################################################################################################
 
--- Function Illumination
+-- ########################################################################################################################
+-- ############################################# Function Illumination ####################################################
+do -- Function Illumination (collaps / expand)
 local function setMapIllumination(vector)
     if dwac.illuminationUnits == nil or dwac.illuminationUnits < 0 then
         _DATABASE:E( "dwac.illuminationUnits is nil or negative" )
@@ -1110,6 +1122,12 @@ local function setMapIllumination(vector)
 end
 dwac.setMapIllumination = setMapIllumination
 
+end
+-- ########################################################################################################################
+
+-- ########################################################################################################################
+-- ############################################### Function Destroy #######################################################
+do -- Function Destroy (collaps / expand)
 local function requestDestroy( panel )
     BASE:I( "Panel destroy command issued by: "..panel.author )
     for _,_auth in pairs( dwac.authorizedDestroyers ) do
@@ -1143,6 +1161,12 @@ local function destroyUnit( unit )
 end
 dwac.destroyUnit = destroyUnit
 
+end
+-- ########################################################################################################################
+
+-- ########################################################################################################################
+-- ################################################# Function UAV #########################################################
+do  -- Function UAV (collaps / expand)
 -- Function UAV active or not
 local function uavSearch(_unit, args)
     if _unit:getTypeName() == dwac.uavType and
@@ -1153,7 +1177,6 @@ local function uavSearch(_unit, args)
 end
 dwac.uavSearch = uavSearch
 
--- Function UAV Spawn
 local function setMapUAV(panel)
     -- BASE:I( "setMapUAV()")
     -- BASE:I( panel.pos )
@@ -1219,16 +1242,16 @@ local function setMapUAV(panel)
 			if(dwac.spawnAir == 0)
 				then
 				-- Take off FROM airfield, so spawnAir == 0
-					dwac.uavAirfield["route"]["points"][1].airdromeId = dwac.uavnearestAirfieldID 											-- Sets AirfieldID for Repair unit to start from.
+					dwac.uavAirfield["route"]["points"][1].airdromeId = dwac.uavnearestAirfieldID 											-- Sets AirfieldID for Support unit to start from.
 					
-					trigger.action.outTextForCoalition(panel.coalition, "CAUTION: Launching an UAV from " .. nearestAirfield:getName(), dwac.uavmessageDuration, false)
+					trigger.action.outTextForCoalition(panel.coalition, "CLASSIFIED : Launching an UAV from " .. nearestAirfield:getName(), dwac.uavmessageDuration, false)
 					coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uavAirfield)
 				else
 				-- Take off IN air, so spawnAir == 1
 					dwac.uav["route"]["points"][1].x = vector.x																				-- Starting Coordinates
 					dwac.uav["route"]["points"][1].y = vector.z																				-- Starting Coordinates
 
-					trigger.action.outTextForCoalition(panel.coalition, "CAUTION: UAV departing from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+					trigger.action.outTextForCoalition(panel.coalition, "CLASSIFIED : UAV departing from " .. nearestAirfield:getName(), dwac.messageDuration, false)
 					coalition.addGroup(_country, Group.Category.AIRPLANE, dwac.uav)
 				end
 
@@ -1238,7 +1261,7 @@ local function setMapUAV(panel)
             _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested UAV for Lat: " .. lat .. " Lon: " .. lon )
             dwac.uavInFlight[panel.coalition] = dwac.uavLimit
 		else
-					trigger.action.outTextForCoalition(panel.coalition, "UAV allready airborn", dwac.messageDuration, false)	-- Message UAV allready in the AIR
+					trigger.action.outTextForCoalition(panel.coalition, "CLASSIFIED : UAV allready airborn", dwac.messageDuration, false)		-- Message UAV allready in the AIR
 						-- UNDER CONSTRUCTION Needs to be inserted to UAV Coordinates
 						--dwac.uav["route"]["points"][2].x = vector.x																			-- New F10 Waypoint location
 						--dwac.uav["route"]["points"][2].y = vector.z																			-- New F10 Waypoint location
@@ -1250,18 +1273,24 @@ end
 dwac.setMapUAV = setMapUAV
 -- End Function UAV
 
--- Function REPAIR active or not
-local function repairSearch(_unit, args)
-    if _unit:getTypeName() == dwac.repairType and
+end
+-- ########################################################################################################################
+
+-- ########################################################################################################################
+-- ############################################### Function Support #######################################################
+-- ########################################################################################################################
+do -- Function SUPPORT (collaps / expand)
+local function supportSearch(_unit, args)
+    if _unit:getTypeName() == dwac.supportType and
         _unit:getCoalition() == args[1] and
         _unit:inAir() then
-        dwac.repairInFlight[args[1]] = true -- Probably a problem.  Coalition collision?
+        dwac.supportInFlight[args[1]] = true -- Probably a problem.  Coalition collision?
     end
 end
-dwac.repairSearch = repairSearch
+dwac.supportSearch = supportSearch
 
--- Function REPAIR Spawn
-local function setMapREPAIR(panel)
+-- Function SUPPORT Spawn
+local function setMapSUPPORT(panel)
     local vector = panel.pos
     local _author = panel.author
     local _playerUnit = nil
@@ -1287,37 +1316,37 @@ local function setMapREPAIR(panel)
             radius = 150000 -- 150 kilometer radius
         }
     }
-    if dwac.repairInFlight[panel.coalition] then
+    if dwac.supportInFlight[panel.coalition] then
         return true -- return without doing anything, but clear the marker
     end
-    world.searchObjects(Object.Category.UNIT, _vol, dwac.repairSearch, {panel.coalition})
+    world.searchObjects(Object.Category.UNIT, _vol, dwac.supportSearch, {panel.coalition})
 
-    -- delay to let DCS locate a REPAIR or not
+    -- delay to let DCS locate a SUPPORT or not
     timer.scheduleFunction(function()
-        if not dwac.repairInFlight[panel.coalition] then
+        if not dwac.supportInFlight[panel.coalition] then
             -- get nearest airfield to vector
             local nearestAirfield = dwac.getNearestAirfield(vector, panel.coalition)
             local nearestAirfieldPoint = nearestAirfield:getPoint()
 
 			local nearestAirfieldID = nearestAirfield:getID()
-			dwac.repairnearestAirfieldID = nearestAirfieldID -- Set airport ID
+			dwac.supportnearestAirfieldID = nearestAirfieldID -- Set airport ID
 
-            -- spawn REPAIR with directions to fly to vector and Land.
-            -- Get best REPAIR position
-            dwac.repair.x = nearestAirfieldPoint.x
-            dwac.repair.y = nearestAirfieldPoint.z  -- don't ask me why
+            -- spawn SUPPORT with directions to fly to vector and Land.
+            -- Get best SUPPORT position
+            dwac.support.x = nearestAirfieldPoint.x
+            dwac.support.y = nearestAirfieldPoint.z  -- don't ask me why
 					-- For Spawn in AIR
-            --dwac.repair["units"][1].x = nearestAirfieldPoint.x	-- Coordinates to start from
-            --dwac.repair["units"][1].y = nearestAirfieldPoint.z	-- Coordinates to start from
+            --dwac.support["units"][1].x = nearestAirfieldPoint.x	-- Coordinates to start from
+            --dwac.support["units"][1].y = nearestAirfieldPoint.z	-- Coordinates to start from
 			
 					-- or For Spawn on AIRFIELD
-			dwac.repair["route"]["points"][1].airdromeId = dwac.repairnearestAirfieldID 				-- Sets AirfieldID for Repair unit to start from.
+			dwac.support["route"]["points"][1].airdromeId = dwac.supportnearestAirfieldID 				-- Sets AirfieldID for Repair unit to start from.
 			
 					-- Waypoint
-			dwac.repair["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].x = vector.x		-- Waypoint
-            dwac.repair["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].y = vector.z + 20	-- Waypoint (added 20 offset)
+			dwac.support["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].x = vector.x			-- Waypoint
+            dwac.support["route"]["points"][1]["task"]["params"]["tasks"][1]["params"].y = vector.z + 20	-- Waypoint (added 20 offset)
 
-            coalition.addGroup(_country, Group.Category.HELICOPTER, dwac.repair)
+            coalition.addGroup(_country, Group.Category.HELICOPTER, dwac.support)
 			
 			dwac.farpAmmo.x = vector.x + 20		-- Coordinates for Ammo (added 20 offset)
             dwac.farpAmmo.y = vector.z			-- Coordinates for Ammo
@@ -1336,46 +1365,56 @@ local function setMapREPAIR(panel)
 			
 			--coalition.addStaticObject(country.id.USA, staticObj)
 			--coalition.addGroup(country.id.USA, Group.Category.GROUND, groupData)			
-		--trigger.action.outTextForCoalition(panel.coalition, "DEBUG: airfieldID : " .. dwac.repairnearestAirfieldID, dwac.messageDuration, false)
-            trigger.action.outTextForCoalition(panel.coalition, "Launching support from " .. nearestAirfield:getName(), dwac.messageDuration, false)
+		--trigger.action.outTextForCoalition(panel.coalition, "DEBUG: airfieldID : " .. dwac.supportnearestAirfieldID, dwac.messageDuration, false)
+            trigger.action.outTextForCoalition(panel.coalition, "CLASSIFIED : Launching support from " .. nearestAirfield:getName(), dwac.messageDuration, false)
 
             local lat, lon, alt = coord.LOtoLL(vector)
-            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested REPAIRS for Lat: " .. lat .. " Lon: " .. lon )
-            dwac.repairInFlight[panel.coalition] = dwac.repairLimit
+            _DATABASE:E( "User " .. _playerUnit:getPlayerName() .. " requested SUPPORT for Lat: " .. lat .. " Lon: " .. lon )
+            dwac.supportInFlight[panel.coalition] = dwac.supportLimit
         end
     end, nil, timer.getTime() + 5)
     return true
 end
-dwac.setMapREPAIR = setMapREPAIR
--- End Function REPAIR
+dwac.setMapSUPPORT = setMapSUPPORT
 
--- Function Version
+end
+
+-- ########################################################################################################################
+-- ############################################### Function Version #######################################################
+-- ########################################################################################################################
+do -- Function Version (collaps / expand)
 local function showVersion()
     MESSAGE:New( "Version: " .. dwac.version, 5, "DWAC Load" ):ToAll()
 end
 dwac.showVersion = showVersion
 
--- Function DEBUG
-local function showDebug()
---unitFuel(Lightyear)
-MESSAGE:New( " : dwac.spawnAir      = " .. dwac.spawnAir, 5, "DEBUG" ):ToAll() -- Debugging flags example
---MESSAGE:New( " : dwac.uavInvisible  = " .. dwac.uavInvisible, 5, "DEBUG" ):ToAll() -- Debugging flags example
---MESSAGE:New( " : dwac.fuelLevel = " .. dwac.fuelLevel, 5, "DEBUG" ):ToAll()
 end
-dwac.showDebug = showDebug
 
-local function missionStopHandler(event)
-    _DATABASE:E( "DWAC: Closing event handlers")
-    if mapIlluminationRequestHandler then
-        world.removeEventHandler(mapIlluminationRequestHandler)
-    end
-    if dwac.mapSmokeRequestHandler then
-        world.removeEventHandler(mapSmokeRequestHandler)
-    end
+-- ########################################################################################################################
+-- ################################################ Function DEBUG ########################################################
+-- ########################################################################################################################
+do -- Function DEBUG (collaps / expand)
+	local function showDebug()
+	--unitFuel(Lightyear)
+	MESSAGE:New( " : dwac.spawnAir      = " .. dwac.spawnAir, 5, "DEBUG" ):ToAll() -- Debugging flags example
+	--MESSAGE:New( " : dwac.uavInvisible  = " .. dwac.uavInvisible, 5, "DEBUG" ):ToAll() -- Debugging flags example
+	--MESSAGE:New( " : dwac.fuelLevel = " .. dwac.fuelLevel, 5, "DEBUG" ):ToAll()
+	end
+	dwac.showDebug = showDebug
+	
 end
-dwac.missionStopHandler = missionStopHandler
 
--- Function Smoke
+-- ########################################################################################################################
+-- ################################################ Function Smoke ########################################################
+-- ########################################################################################################################
+do -- Function Smoke (collaps / expand)
+local function setMapSmoke(requestText, vector)
+    local lowerText = string.lower(requestText)
+    smokeColor = lowerText:match("^-smoke;(%a+)")
+    return dwac.smokePoint(vector, smokeColor)
+end
+dwac.setMapSmoke = setMapSmoke
+
 local function smokePoint(vector, smokeColor)
     vector.y = vector.y + 2.0
     local lat, lon, alt = coord.LOtoLL(vector)
@@ -1403,6 +1442,12 @@ local function smokePoint(vector, smokeColor)
 end
 dwac.smokePoint = smokePoint
 
+end
+
+-- ########################################################################################################################
+-- ################################################## Common Stuff ########################################################
+-- ########################################################################################################################
+do -- Common stuff (collaps / expand)
 -- returns the nearest coalition airbase for a given point
 local function getNearestAirfield(_point, _coalition)
     local nearestAirfield = nil
@@ -1423,6 +1468,17 @@ local function getNearestAirfield(_point, _coalition)
 end
 dwac.getNearestAirfield = getNearestAirfield
 
+local function missionStopHandler(event)
+    _DATABASE:E( "DWAC: Closing event handlers")
+    if mapIlluminationRequestHandler then
+        world.removeEventHandler(mapIlluminationRequestHandler)
+    end
+    if dwac.mapSmokeRequestHandler then
+        world.removeEventHandler(mapSmokeRequestHandler)
+    end
+end
+dwac.missionStopHandler = missionStopHandler
+
 local function getRadialPoints(_sourceVec, _radius, _count)
     -- https://math.stackexchange.com/questions/1030655/how-do-we-find-points-on-a-circle-equidistant-from-each-other
     local points = {}
@@ -1436,10 +1492,12 @@ local function getRadialPoints(_sourceVec, _radius, _count)
     return points
 end
 dwac.getRadialPoints = getRadialPoints
+end
 
--- ##########################
--- EVENT HANDLING
--- ##########################
+-- ########################################################################################################################
+-- ################################################## EVENT HANDLING ######################################################
+-- ########################################################################################################################
+do -- The events handling and removal off the markers (collaps / expand)
 dwac.dwacEventHandler = {}
 function dwac.dwacEventHandler:onEvent(event)
     -- *** Close Logger on Mission Stop***
@@ -1471,8 +1529,8 @@ function dwac.dwacEventHandler:onEvent(event)
                         timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
                     end
                     break
-				elseif dwac.enableMapREPAIR and markType == dwac.MapRequest.REPAIR then
-                    if dwac.setMapREPAIR(panel) then
+				elseif dwac.enableMapSUPPORT and markType == dwac.MapRequest.SUPPORT then
+                    if dwac.setMapSUPPORT(panel) then
                         timer.scheduleFunction(trigger.action.removeMark, panel.idx, timer.getTime() + 2)
                     end
                     break
@@ -1494,27 +1552,32 @@ function dwac.dwacEventHandler:onEvent(event)
 end
 world.addEventHandler(dwac.dwacEventHandler)
 
-dwac.showDebug()
-dwac.showVersion()
-
--- Handle Player entrances
-dwac.ClientSelectHandler = EVENTHANDLER:New()
-dwac.ClientSelectHandler:HandleEvent( EVENTS.PlayerEnterAircraft )
-
-function dwac.ClientSelectHandler:OnEventPlayerEnterAircraft( eventData )
-  _DATABASE:I( "OnPlayerEnterAircraft" )
-  _DATABASE:I( eventData )
-  local _client = CLIENT:FindByName( eventData.IniDCSUnitName )
-  local _type = eventData.IniTypeName
-
-  _DATABASE:I( "InitFacA.Client.Type: " .. _type )
-  if dwac.IsFacAUnit( _type ) then
-    dwac.setUpFacA( _client )
-  end
 end
 
-if dwac.listHeloClientsInLog then
-  for _,_client in pairs( _DATABASE.CLIENTS ) do
-    BASE:I( _client.ClientName )
-  end
+do -- Run default / needed (collaps / expand)
+	dwac.showDebug()
+	dwac.showVersion()
+	
+	-- Handle Player entrances
+	dwac.ClientSelectHandler = EVENTHANDLER:New()
+	dwac.ClientSelectHandler:HandleEvent( EVENTS.PlayerEnterAircraft )
+	
+	function dwac.ClientSelectHandler:OnEventPlayerEnterAircraft( eventData )
+	_DATABASE:I( "OnPlayerEnterAircraft" )
+	_DATABASE:I( eventData )
+	local _client = CLIENT:FindByName( eventData.IniDCSUnitName )
+	local _type = eventData.IniTypeName
+	
+	_DATABASE:I( "InitFacA.Client.Type: " .. _type )
+	if dwac.IsFacAUnit( _type ) then
+		dwac.setUpFacA( _client )
+	end
+	end
+	
+	if dwac.listHeloClientsInLog then
+	for _,_client in pairs( _DATABASE.CLIENTS ) do
+		BASE:I( _client.ClientName )
+	end
+	end
+	
 end
